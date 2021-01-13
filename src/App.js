@@ -6,8 +6,6 @@ import WriteValue from './WriteValue/WriteValue';
 function App() {
   const [supportsBluetooth, setSupportsBluetooth] = useState(false);
   const [isDisconnected, setIsDisconnected] = useState(true);
-  const [deviceName, setDeviceName] = useState(null);
-  const [hexValue, setHexValue] = useState(0);
   const [motorCharacteristicService, setMotorCharacteristicService] = useState(null);
 
   const SEND_SERVICE_LIZZIE = "251fb674-1665-40e4-8bf0-24a97efba116";
@@ -60,7 +58,6 @@ function App() {
       optionalServices: [SEND_SERVICE_TOSIN]
     });
 
-      setDeviceName(device.name);
       setIsDisconnected(false);
 
       // Add an event listener to detect when a device disconnects
@@ -82,30 +79,17 @@ function App() {
     }
   };
 
-const handleSubmit = async () => {
-  console.log(motorCharacteristicService)
-  const reading = await motorCharacteristicService.writeValue(bytesArray(50));
-
-}
-
-// this is broken!
-const handleChange =(event) => {
-  this.setState({hexValue: event.target.value});
-}
-
   return (
     <div className="App">
       <h1>Hello! Send a virtual pulse hug to a friend :-)</h1>
       {supportsBluetooth && !isDisconnected && 
-      <WriteValue characteristic={motorCharacteristicService}></WriteValue>
-        //<button onClick={handleSubmit}>Send pulse</button>
-      
+      <WriteValue characteristic={motorCharacteristicService}></WriteValue>      
       }
       {supportsBluetooth && isDisconnected &&
         <button onClick={connectToDeviceAndSubscribeToUpdates}>Connect to a Bluetooth device</button>
       }
       {!supportsBluetooth &&
-        <p>This browser doesn't support the Web Bluetooth API</p>
+        <p>Sorry, your browser does not support this feature :-(</p>
       }
     </div>
   );

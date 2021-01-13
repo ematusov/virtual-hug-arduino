@@ -1,5 +1,4 @@
 import React from 'react';
-import Slider, { Range } from 'rc-slider';
 
 
 class WriteValue extends React.Component {
@@ -15,6 +14,7 @@ class WriteValue extends React.Component {
         this.setState({value: event.target.value});
       }
 
+    // converts an int into a bytearray for the arduino to read
     bytesArray = (n) => {
         if (!n) return new ArrayBuffer(0)
         const a = []
@@ -38,9 +38,7 @@ class WriteValue extends React.Component {
                 <input type="text" value={this.state.value} onChange={this.handleChange}/>
                 <input type="submit" value="Submit" />
             </label>
-        </form>
-        //   <Slider color="red"/>
-    
+        </form>    
       );
     }
   }
