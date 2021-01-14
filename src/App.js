@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import Slider, { Range } from 'rc-slider';
+import { Button, Grid } from '@material-ui/core';
 import './App.css';
 import WriteValue from './WriteValue/WriteValue';
+import Background from './assets/vh_background.png';
 
 function App() {
   const [supportsBluetooth, setSupportsBluetooth] = useState(false);
@@ -50,12 +51,9 @@ function App() {
     try {
       // Search for Bluetooth device to connect to the browser
       const device = await navigator.bluetooth
-        // .requestDevice({
-        //   acceptAllDevices: true
-        // });
       .requestDevice({
       acceptAllDevices: true,
-      optionalServices: [SEND_SERVICE_TOSIN]
+      optionalServices: [SEND_SERVICE_LIZZIE]
     });
 
       setIsDisconnected(false);
@@ -66,10 +64,12 @@ function App() {
       // Try to connect to the remote GATT Server running on the Bluetooth device
       const server = await device.gatt.connect()
 
-      const primaryService = await server.getPrimaryService(SEND_SERVICE_TOSIN);
+      const primaryService = await server.getPrimaryService(SEND_SERVICE_LIZZIE);
+      console.log("primary service")
       console.log(primaryService)
       
-      const motorCharacteristic = await primaryService.getCharacteristic(SEND_SERVICE_CHARACTERISTIC_TOSIN);
+      const motorCharacteristic = await primaryService.getCharacteristic(SEND_SERVICE_CHARACTERISTIC_LIZZIE);
+      console.log("motor characteristic")
       console.log(motorCharacteristic);
       setMotorCharacteristicService(motorCharacteristic);
       
@@ -81,16 +81,20 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Hello! Send a virtual pulse hug to a friend :-)</h1>
+      <div className="container">
       {supportsBluetooth && !isDisconnected && 
-      <WriteValue characteristic={motorCharacteristicService}></WriteValue>      
+      <WriteValue characteristic={motorCharacteristicService}></WriteValue>     
       }
       {supportsBluetooth && isDisconnected &&
-        <button onClick={connectToDeviceAndSubscribeToUpdates}>Connect to a Bluetooth device</button>
+      <Button
+        variant="contained" 
+        color="primary" 
+        onClick={connectToDeviceAndSubscribeToUpdates}>Connect to Someone Near You</Button>
       }
       {!supportsBluetooth &&
         <p>Sorry, your browser does not support this feature :-(</p>
       }
+      </div>
     </div>
   );
 }
