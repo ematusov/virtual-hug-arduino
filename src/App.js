@@ -4,7 +4,15 @@ import './App.css';
 import WriteValue from './WriteValue/WriteValue';
 import Background from './assets/vh_background.png';
 
+//create your forceUpdate hook
+function useForceUpdate(){
+  const [value, setValue] = useState(0); // integer state
+  return () => setValue(value => value + 1); // update the state to force render
+}
+
+
 function App() {
+  
   const [supportsBluetooth, setSupportsBluetooth] = useState(false);
   const [isDisconnected, setIsDisconnected] = useState(true);
   const [motorCharacteristicService, setMotorCharacteristicService] = useState(null);
@@ -16,6 +24,9 @@ function App() {
   const SEND_SERVICE_TOSIN = "251fb675-1665-40e4-8bf0-24a97efba116"
   const SEND_SERVICE_CHARACTERISTIC_TOSIN = "6e260f41-5fee-424a-879e-0e28aa8b7136"
   const DEVICE_NAME_TOSIN = "Tosins Soln Code NANO BLE 33 SENSE"
+
+
+  const forceUpdate = useForceUpdate();
 
   const bytesArray = (n) => {
     if (!n) return new ArrayBuffer(0)
@@ -43,6 +54,9 @@ function App() {
     setIsDisconnected(true);
   }
 
+  React.useEffect(() => {
+    console.log("MOTOR CHARACTERISTIC UPDATED")
+  }, [motorCharacteristicService])
   /**
    * Attempts to connect to a Bluetooth device and subscribe to
    * battery level readings using the battery service.
@@ -52,8 +66,7 @@ function App() {
       // Search for Bluetooth device to connect to the browser
       const device = await navigator.bluetooth
       .requestDevice({
-      acceptAllDevices: true,
-      optionalServices: [SEND_SERVICE_LIZZIE]
+      acceptAllDevices: true
     });
 
       setIsDisconnected(false);
@@ -64,15 +77,19 @@ function App() {
       // Try to connect to the remote GATT Server running on the Bluetooth device
       const server = await device.gatt.connect()
 
-      const primaryService = await server.getPrimaryService(SEND_SERVICE_LIZZIE);
-      console.log("primary service")
-      console.log(primaryService)
+      const primaryService = await server.getPrimaryService(SEND_SERVICE_TOSIN);
+      console.log(primaryService);
       
-      const motorCharacteristic = await primaryService.getCharacteristic(SEND_SERVICE_CHARACTERISTIC_LIZZIE);
-      console.log("motor characteristic")
-      console.log(motorCharacteristic);
+      const motorCharacteristic = await primaryService.getCharacteristic(SEND_SERVICE_CHARACTERISTIC_TOSIN);
+      
       setMotorCharacteristicService(motorCharacteristic);
+      console.log(motorCharacteristic);
+      this.forceUpdate();
       
+      console.log("!!!!")
+      console.log(motorCharacteristicService)
+      console.log("!!!!")
+
       
     } catch(error) {
       console.log(`There was an error: ${error}`);
@@ -86,10 +103,14 @@ function App() {
       <WriteValue characteristic={motorCharacteristicService}></WriteValue>     
       }
       {supportsBluetooth && isDisconnected &&
+      <>
+      <h1>Virtual Hugs</h1>
+      <h4>We know it's getting harder than ever to be far apart. </h4>
       <Button
         variant="contained" 
         color="primary" 
-        onClick={connectToDeviceAndSubscribeToUpdates}>Connect to Someone Near You</Button>
+        onClick={() => connectToDeviceAndSubscribeToUpdates().then(() => forceUpdate())}>Virtually Connect to Someone Near You</Button>
+        </>
       }
       {!supportsBluetooth &&
         <p>Sorry, your browser does not support this feature :-(</p>
