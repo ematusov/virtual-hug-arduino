@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import Slider, { Range } from 'rc-slider';
+import { Button, Grid } from '@material-ui/core';
 import './App.css';
 import WriteValue from './WriteValue/WriteValue';
+import Background from './assets/vh_background.png';
+import Logo from './assets/logo.png';
 
 function App() {
   const [supportsBluetooth, setSupportsBluetooth] = useState(false);
@@ -81,17 +83,25 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Hello! Send a virtual pulse hug to a friend :-)</h1>
-      {supportsBluetooth && !isDisconnected && 
-      <WriteValue characteristic={motorCharacteristicService}></WriteValue>      
-      }
-      {supportsBluetooth && isDisconnected &&
-        <button onClick={connectToDeviceAndSubscribeToUpdates}>Connect to a Bluetooth device</button>
-      }
-      {!supportsBluetooth &&
-        <p>Sorry, your browser does not support this feature :-(</p>
-      }
+    <div className="container">
+    {supportsBluetooth && !isDisconnected && 
+    <WriteValue characteristic={motorCharacteristicService}></WriteValue>     
+    }
+    {supportsBluetooth && isDisconnected &&
+    <>
+    <img src={Logo}/>
+    <h4>We know being apart is harder than ever. Let's fight isolation, one vibe at a time.</h4>
+    <Button
+      variant="contained" 
+      color="primary" 
+      onClick={connectToDeviceAndSubscribeToUpdates}>Send a Vibe</Button>
+      </>
+    }
+    {!supportsBluetooth &&
+      <p>Sorry, your browser does not support this feature :-(</p>
+    }
     </div>
+  </div>
   );
 }
 
