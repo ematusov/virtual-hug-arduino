@@ -52,9 +52,6 @@ function App() {
     try {
       // Search for Bluetooth device to connect to the browser
       const device = await navigator.bluetooth
-        // .requestDevice({
-        //   acceptAllDevices: true
-        // });
       .requestDevice({
       acceptAllDevices: true,
       optionalServices: [SEND_SERVICE_TOSIN]
@@ -69,10 +66,8 @@ function App() {
       const server = await device.gatt.connect()
 
       const primaryService = await server.getPrimaryService(SEND_SERVICE_TOSIN);
-      console.log(primaryService)
       
       const motorCharacteristic = await primaryService.getCharacteristic(SEND_SERVICE_CHARACTERISTIC_TOSIN);
-      console.log(motorCharacteristic);
       setMotorCharacteristicService(motorCharacteristic);
       
       
